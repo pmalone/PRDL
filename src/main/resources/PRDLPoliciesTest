@@ -1,0 +1,7 @@
+CompanyPolicies;
+
+HealthDept MAY VIEW ON customerRecords,healthRecords FOR goodReason,treatmentReason;
+CustomerSupport MAY VIEW ON customerRecords FOR administrativeReason;
+CustomerSupport MAY VIEW ON healthRecords FOR schedulingReason;
+Marketing MUST_NOT VIEW ON healthRecords FOR anyReason;
+HealthDept MUST DELETE ON healthRecords FOR reasonsOfObsolescence;

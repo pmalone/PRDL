@@ -1,0 +1,51 @@
+group Drools;
+
+policy_file(policy_file_contents) ::= "<policy_file_contents>"
+
+policy_file_contents(policy_name,policy_set) ::= <<
+package <policy_name>;
+
+import eu.endorse.objects.AccessRequest;
+import eu.endorse.objects.ObsolescenceCheck;
+import eu.endorse.objects.Purpose;
+import eu.endorse.objects.DataObject;
+import eu.endorse.objects.Condition;
+
+ 
+<policy_set; separator="\n\n">
+>>
+
+policy_name(name) ::= "<name>"
+
+permissionSingleActor(subject, action, dataObjects, purposes, conditions) ::= <<
+rule <subject>-<action>-<dataObjects; separator=",">-FOR-<purposes; separator=",">
+  when
+    AccessRequest( role == "<subject>" )
+    AccessRequest( <dataObjects:{do | dataObject == "<do>"}; separator=" || "> )
+    $accessRequest : AccessRequest( <purposes:{p | purpose == "<p>"}; separator=" || "> )
+  then
+    $accessRequest.result = "true";
+end
+>>
+
+prohibitionSingleActor(subject, action, dataObjects, purposes, conditions) ::= <<
+rule <subject>-<action>-<dataObjects; separator=",">-FOR-<purposes; separator=",">
+  when
+    AccessRequest( role == "<subject>" )
+    AccessRequest( <dataObjects:{do | dataObject == "<do>"}; separator=" || "> )
+    $accessRequest : AccessRequest( <purposes:{p | purpose == "<p>"}; separator=" || "> )
+  then
+    $accessRequest.result = "false";
+end
+>>
+
+obligationSingleActor(subject, action, dataObjects, purposes, conditions) ::= <<
+rule <subject>-<action>-<dataObjects; separator=",">-FOR-<purposes; separator=",">
+  when
+    DataObsolescenceCheck( role == "<subject>" )
+    DataObsolescenceCheck( <dataObjects:{do | dataObject == "<do>"}; separator=" || "> )
+    $dataObsolescenceCheck : DataObsolescenceCheck( <purposes:{p | purpose == "<p>"}; separator=" || "> )
+  then
+    $dataObsolescenceCheck.deleteDecision = "true";
+end
+>>
